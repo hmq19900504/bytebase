@@ -322,17 +322,15 @@ const useExecuteSQL = () => {
             explain: params.explain,
             schema: params.connection.schema,
             timeout: undefined, // TODO: make this param configurable
-            queryOption: undefined, // TODO: allow users to set
+            queryOption: {
+              redisRunCommandsOn: sqlEditorStore.redisCommandOption,
+            },
           },
           abortController.signal
         );
 
         if (checkBehavior === "NOTIFICATION") {
-          const combinedAdvices =
-            resultSet.advices.length > 0
-              ? resultSet.advices
-              : (checkResult.advices ?? []);
-          notifyAdvices(combinedAdvices);
+          notifyAdvices(checkResult.advices ?? []);
         }
 
         if (resultSet.error) {

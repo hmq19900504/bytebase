@@ -117,7 +117,7 @@ func (s *PlanService) ListPlans(ctx context.Context, request *v1pb.ListPlansRequ
 	var nextPageToken string
 	// has more pages
 	if len(plans) == limitPlusOne {
-		if nextPageToken, err = offset.getPageToken(); err != nil {
+		if nextPageToken, err = offset.getNextPageToken(); err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get next page token, error: %v", err)
 		}
 		plans = plans[:offset.limit]
@@ -180,7 +180,7 @@ func (s *PlanService) SearchPlans(ctx context.Context, request *v1pb.SearchPlans
 	var nextPageToken string
 	// has more pages
 	if len(plans) == limitPlusOne {
-		if nextPageToken, err = offset.getPageToken(); err != nil {
+		if nextPageToken, err = offset.getNextPageToken(); err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get next page token, error: %v", err)
 		}
 		plans = plans[:offset.limit]
@@ -1167,11 +1167,11 @@ func getSpecs(database *store.DatabaseMessage, revisions []*store.RevisionMessag
 
 	for _, r := range revisions {
 		if lastVersion == "" {
-			lastVersion = r.Payload.Version
-		} else if lastVersion < r.Payload.Version {
-			lastVersion = r.Payload.Version
+			lastVersion = r.Version
+		} else if lastVersion < r.Version {
+			lastVersion = r.Version
 		}
-		revisionByVersion[r.Payload.Version] = r
+		revisionByVersion[r.Version] = r
 	}
 
 	slices.SortFunc(release.Payload.Files, func(a, b *storepb.ReleasePayload_File) int {
